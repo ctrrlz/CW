@@ -16,6 +16,7 @@ public:
 	sf::FloatRect getHitBox();
 	sf::Vector2f getPosition();
 	void reduceHp(float dmg);
+	void reduceSc(float sc);
 	bool isDead();
 	float getHp();
 };

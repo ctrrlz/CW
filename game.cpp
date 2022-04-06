@@ -6,7 +6,7 @@ Game::Game() :
 	),
 		"game",
 		sf::Style::Titlebar | sf::Style::Close
-	),
+	), 
 	player(WINDOW_WIDTH / 2 - 120 / 2.f,
 		WINDOW_HEIGHT - 120.f, "k_.png"),
 	hp_text(500, 5, 24, sf::Color::Yellow)
@@ -42,9 +42,9 @@ void Game::update() {
 		for (size_t i = 0; i < 7; i++) {
 			fruit_sprites[i]->update();
 		}
-		/*for (size_t i = 0; i < 3; i++) {
-			bomb_sprites[i]->update();
-		}*/
+		for (auto it = bomb_sprites.begin(); it != bomb_sprites.end(); it++) {
+			(*it)->update();
+		}
 		check_collisions();
 		hp_text.update(std::to_string(static_cast<int>(player.getHp())));
 		break;
@@ -58,38 +58,39 @@ void Game::draw() {
 	switch (game_state) {
 
 	case PLAY:
-		for (size_t i = 0; i < 7; i++) {
+		for (size_t i = 0; i <7; i++) {
 			fruit_sprites[i]->draw(window);
 		}
-		/*for (size_t i = 0; i < 3; i++) {
-			bomb_sprites[i]->draw(window);
-		}*/
+		for (auto it = bomb_sprites.begin(); it != bomb_sprites.end(); it++) {
+			(*it)->draw(window);
+		}
 		player.draw(window);
 		hp_text.draw(window);
 		break;
-	case GAME_OVER:
-		window.draw(game_over.getSprite());
 	}
-	
 	window.display();
 }
 void Game::check_collisions() {
-
+	
+	for (auto it = bomb_sprites.begin(); it != bomb_sprites.end(); it++) {
+		if (player.getHitBox().intersects((*it)->getHitBox())) {
+			player.reduceHp(-50);
+			(*it)->setDel(true);
+		}
+	}
+	bomb_sprites.remove_if([](Bomb* bomb) {return bomb->getDel(); });
+	if (player.isDead()) game_state = GAME_OVER;
+	bomb_sprites.remove_if([](Bomb* bomb) {
+		return bomb->getPosition().y > WINDOW_HEIGHT; });
 	for (size_t i = 0; i < 7; i++) {
 		if (player.getHitBox().intersects(
 			fruit_sprites[i]->getHitBox()))
 		{
-			player.reduceHp(fruit_sprites[i]->getWidth() / 3);
+			player.reduceSc(fruit_sprites[i]->getWidth() / 3);
 			fruit_sprites[i]->spawn();
+
+			Bomb* new_bomb = new Bomb(static_cast<Bomb::BombType>(0),
+				fruit_sprites[i]->getPosition());
+			bomb_sprites.push_back(new_bomb);
 		}
-	}
-	/*for (size_t i = 0; i < 7; i++) {
-		if (player.getHitBox().intersects(
-			bomb_sprites[i]->getHitBox()))
-		{
-			player.reduceSc(bomb_sprites[i]->getWidth() / 3);
-			bomb_sprites[i]->spawn();
-		}
-	}*/
-	if (player.isDead()) game_state = GAME_OVER;
 }

@@ -8,7 +8,7 @@ private:
 	sf::Text text;
 public:
 	TextObj(float x, float y, int size, sf::Color color) {
-		font.loadFromFile("res/kenvector_future.ttf");
+		font.loadFromFile("kenvector_future.ttf");
 		text.setFont(font);
 		text.setFillColor(color);
 		text.setCharacterSize(size);

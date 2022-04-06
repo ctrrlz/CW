@@ -2,14 +2,14 @@
 #include "fruit.h"
 
 std::string Fruit::fruit_file_names[] =
-{ "melon.png",
+{"melon.png",
 "coconut.png",
-"cherry.png",
-"lemon.png",
-};
+"cherry.png", 
+"lemon.png"
+ };
 
 Fruit::Fruit() {
-	size_t type = rand() % 3;
+	size_t type = rand() % 5;
 	texture.loadFromFile(Fruit::fruit_file_names[type]);
 	sprite.setTexture(texture);
 	spawn();
